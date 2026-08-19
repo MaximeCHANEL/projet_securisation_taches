@@ -47,10 +47,14 @@ class AuthTest extends TestCase
 
     public function testLoginPasswordValide(): void
     {
-        $result = $this->auth->login(
-            'phpunit_6a845bec6484c@test.fr',
-            'Test1234!'
-        );
+        $email = 'phpunit_' . uniqid() . '@test.fr';
+        $password = 'Test1234!';
+
+        $registerResult = $this->auth->register($email, $password);
+
+        $this->assertArrayNotHasKey('error', $registerResult);
+
+        $result = $this->auth->login($email, $password);
 
         $this->assertArrayHasKey('token', $result);
         $this->assertNotEmpty($result['token']);

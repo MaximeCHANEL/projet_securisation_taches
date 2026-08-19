@@ -32,12 +32,61 @@ class TaskTest extends TestCase
         $this->taskController = new TaskController($this->pdo);
     }
 
+    private function createUser(): int
+    {
+        $email = 'phpunit_' . uniqid() . '@test.fr';
+
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO utilisateurs (mail, mot_de_passe)
+             VALUES (:mail, :mot_de_passe)"
+        );
+
+        $stmt->execute([
+            'mail' => $email,
+            'mot_de_passe' => password_hash(
+                'Test1234!',
+                PASSWORD_DEFAULT
+            )
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    private function createTask(int $userId): int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO taches (
+                id_utilisateurs,
+                titre,
+                description,
+                statut
+            )
+            VALUES (
+                :id_utilisateurs,
+                :titre,
+                :description,
+                :statut
+            )"
+        );
+
+        $stmt->execute([
+            'id_utilisateurs' => $userId,
+            'titre' => 'Tâche PHPUnit',
+            'description' => 'Description de la tâche PHPUnit',
+            'statut' => 'a_faire'
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
     public function testCreateTask(): void
     {
+        $userId = $this->createUser();
+
         $result = $this->taskController->createTask(
-            1,
-            "Tâche PHPUnit",
-            "Description de la tâche PHPUnit"
+            $userId,
+            'Tâche PHPUnit',
+            'Description de la tâche PHPUnit'
         );
 
         $this->assertArrayNotHasKey('error', $result);
@@ -49,19 +98,24 @@ class TaskTest extends TestCase
 
     public function testGetTasks(): void
     {
+        $userId = $this->createUser();
+        $this->createTask($userId);
+
         $result = $this->taskController->getTasks();
 
-        $this->assertNotNull($result);
-
         $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
         $this->assertArrayNotHasKey('error', $result);
     }
 
     public function testUpdateTask(): void
     {
+        $userId = $this->createUser();
+        $taskId = $this->createTask($userId);
+
         $result = $this->taskController->updateTask(
-            8,
-            1,
+            $taskId,
+            $userId,
             [
                 'titre' => 'Tâche mise à jour',
                 'description' => 'Description mise à jour',
@@ -70,31 +124,47 @@ class TaskTest extends TestCase
         );
 
         $this->assertArrayNotHasKey('error', $result);
+        $this->assertEquals(
+            'Task updated successfully',
+            $result['message']
+        );
     }
 
     public function testDeleteTask(): void
     {
-        $result = $this->taskController->deleteTask(
-            5
-        );
-        
+        $userId = $this->createUser();
+        $taskId = $this->createTask($userId);
+
+        $result = $this->taskController->deleteTask($taskId);
+
         $this->assertArrayNotHasKey('error', $result);
+        $this->assertEquals(
+            'Task deleted successfully',
+            $result['message']
+        );
     }
 
     public function testUserCannotModifyAnotherUsersTask(): void
     {
+        $user1Id = $this->createUser();
+        $user2Id = $this->createUser();
+
+        $taskId = $this->createTask($user1Id);
+
         $result = $this->taskController->updateTask(
-            7,
-            2,
+            $taskId,
+            $user2Id,
             [
                 'titre' => 'Tâche mise à jour',
                 'description' => 'Description mise à jour',
                 'statut' => 'en_cours'
             ]
         );
-        
+
         $this->assertArrayHasKey('error', $result);
+        $this->assertEquals(
+            'Unauthorized',
+            $result['error']
+        );
     }
 }
-
-?>
