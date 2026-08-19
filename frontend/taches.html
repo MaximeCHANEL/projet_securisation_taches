@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Mes tâches - Task Manager</title>
+</head>
+
+<body>
+
+    <h1>Mes tâches</h1>
+
+    <button id="logoutButton">
+        Se déconnecter
+    </button>
+
+    <hr>
+
+    <h2>Ajouter une tâche</h2>
+
+    <form id="taskForm">
+
+        <div>
+            <label for="titre">Titre :</label>
+            <input
+                type="text"
+                id="titre"
+                required
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label for="description">Description :</label>
+            <textarea id="description"></textarea>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Ajouter
+        </button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <hr>
+
+    <h2>Liste des tâches</h2>
+
+    <div id="tasksList">
+        Chargement...
+    </div>
+
+    <!-- JavaScript chargé après le HTML -->
+    <script src="js/taches.js"></script>
+
+</body>
+</html>

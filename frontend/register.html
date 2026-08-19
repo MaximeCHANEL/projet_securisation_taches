@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Inscription - Task Manager</title>
+</head>
+
+<body>
+
+    <h1>Créer un compte</h1>
+
+    <form id="registerForm">
+
+        <div>
+            <label for="email">Email :</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label for="password">Mot de passe :</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label for="confirmPassword">
+                Confirmer le mot de passe :
+            </label>
+
+            <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+            >
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Créer mon compte
+        </button>
+
+        <button type="button" id="loginButton">
+            Retour à la connexion
+        </button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <script src="js/register.js"></script>
+
+</body>
+</html>
