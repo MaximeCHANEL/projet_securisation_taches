@@ -14,7 +14,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
-    # Variables utilisées uniquement pour les tests
     env:
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
@@ -22,7 +21,6 @@ jobs:
       DB_USERNAME: test_user
       DB_PASSWORD: test_password
 
-    # Base de données MySQL utilisée pendant les tests
     services:
       mysql:
         image: mysql:8.0
@@ -40,11 +38,9 @@ jobs:
           --health-retries=5
 
     steps:
-      # 1. Récupération du projet
       - name: Récupérer le code
         uses: actions/checkout@v4
 
-      # 2. Installation de PHP
       - name: Installer PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -52,12 +48,10 @@ jobs:
           extensions: pdo, pdo_mysql
           coverage: none
 
-      # 3. Installation des dépendances PHP
       - name: Installer les dépendances
         working-directory: backend
         run: composer install --no-interaction --prefer-dist
 
-      # 4. Attendre que MySQL soit disponible
       - name: Vérifier MySQL
         run: |
           mysqladmin ping \
@@ -67,7 +61,6 @@ jobs:
             -ptest_password \
             --wait
 
-      # 5. Création des tables de la base de test
       - name: Initialiser la base de données de test
         run: |
           mysql \
@@ -77,19 +70,6 @@ jobs:
             -ptest_password \
             secure_tasks_test < db_test/init.sql
 
-      - name: Vérifier les variables de test
-        run: |
-          echo "DB_HOST=$DB_HOST"
-          echo "DB_PORT=$DB_PORT"
-          echo "DB_DATABASE=$DB_DATABASE"
-          echo "DB_USERNAME=$DB_USERNAME"
-
-      # 6. Vérification de la configuration PHPUnit
-      - name: Vérifier les tests PHPUnit
-        working-directory: backend
-        run: vendor/bin/phpunit -c phpunit.xml --list-tests
-
-      # 7. Exécution des tests
       - name: Exécuter les tests PHPUnit
         working-directory: backend
         run: vendor/bin/phpunit -c phpunit.xml
