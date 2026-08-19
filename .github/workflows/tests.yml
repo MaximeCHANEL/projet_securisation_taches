@@ -29,6 +29,10 @@ jobs:
         working-directory: backend
         run: composer install --no-interaction --prefer-dist
 
+      - name: Vérifier la configuration PHPUnit
+        working-directory: backend
+        run: vendor/bin/phpunit -c phpunit.xml --list-tests
+
       - name: Exécuter les tests
         working-directory: backend
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit -c phpunit.xml
