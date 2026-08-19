@@ -3,3 +3,4 @@
 .env
 .env.local
 composer.phar
+.phpunit.result.cache
