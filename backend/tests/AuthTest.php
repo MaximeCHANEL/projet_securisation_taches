@@ -14,9 +14,14 @@ class AuthTest extends TestCase
     protected function setUp(): void
     {
         $this->pdo = new PDO(
-            'mysql:host=localhost;port=3306;dbname=projet_securisation_taches_test;charset=utf8mb4',
-            'base_test',
-            'baseTest123'
+            sprintf(
+                'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+                getenv('DB_HOST'),
+                getenv('DB_PORT'),
+                getenv('DB_DATABASE')
+            ),
+            getenv('DB_USERNAME'),
+            getenv('DB_PASSWORD')
         );
 
         $this->pdo->setAttribute(
