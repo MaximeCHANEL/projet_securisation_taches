@@ -77,6 +77,13 @@ jobs:
             -ptest_password \
             secure_tasks_test < db_test/init.sql
 
+      - name: Vérifier les variables de test
+        run: |
+          echo "DB_HOST=$DB_HOST"
+          echo "DB_PORT=$DB_PORT"
+          echo "DB_DATABASE=$DB_DATABASE"
+          echo "DB_USERNAME=$DB_USERNAME"
+
       # 6. Vérification de la configuration PHPUnit
       - name: Vérifier les tests PHPUnit
         working-directory: backend
