@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
     UNIQUE KEY `mail` (`mail`)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_uca1400_ai_ci;
+  COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE IF NOT EXISTS `sessions` (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
         ON DELETE CASCADE
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_uca1400_ai_ci;
+  COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE IF NOT EXISTS `taches` (
@@ -47,4 +47,4 @@ CREATE TABLE IF NOT EXISTS `taches` (
         ON DELETE CASCADE
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_uca1400_ai_ci;
+  COLLATE=utf8mb4_unicode_ci;
