@@ -48,15 +48,17 @@ jobs:
           extensions: pdo, pdo_mysql
           coverage: xdebug
 
-      # ...
-
-      - name: Exécuter le test avec coverage
-        working-directory: backend
-        run: vendor/bin/phpunit -c phpunit.xml --filter testUserCannotModifyAnotherUsersTask --coverage-text
-
       - name: Installer les dépendances
         working-directory: backend
         run: composer install --no-interaction --prefer-dist
+
+      - name: Vérifier les dépendances
+        working-directory: backend
+        run: |
+          pwd
+          ls -la
+          ls -la vendor
+          ls -la vendor/bin || true
 
       - name: Vérifier MySQL
         run: |
@@ -75,6 +77,12 @@ jobs:
             -u test_user \
             -ptest_password \
             secure_tasks_test < db_test/init.sql
+
+      # ...
+
+      - name: Exécuter le test avec coverage
+        working-directory: backend
+        run: vendor/bin/phpunit -c phpunit.xml --filter testUserCannotModifyAnotherUsersTask --coverage-text
 
       - name: Exécuter les tests PHPUnit
         working-directory: backend
