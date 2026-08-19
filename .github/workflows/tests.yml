@@ -46,7 +46,13 @@ jobs:
         with:
           php-version: '8.3'
           extensions: pdo, pdo_mysql
-          coverage: none
+          coverage: xdebug
+
+      # ...
+
+      - name: Exécuter le test avec coverage
+        working-directory: backend
+        run: vendor/bin/phpunit -c phpunit.xml --filter testUserCannotModifyAnotherUsersTask --coverage-text
 
       - name: Installer les dépendances
         working-directory: backend

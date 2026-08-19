@@ -45,6 +45,20 @@ class AuthTest extends TestCase
         $this->assertArrayNotHasKey('error', $result);
     }
 
+    public function testRegisterPasswordFaible(): void
+    {
+        $email = 'phpunit_' . uniqid() . '@test.fr';
+
+        $passwordFaible = '123';
+
+        $result = $this->auth->register(
+            $email,
+            $passwordFaible
+        );
+
+        $this->assertArrayHasKey('error', $result);
+    }
+
     public function testLoginPasswordValide(): void
     {
         $email = 'phpunit_' . uniqid() . '@test.fr';
