@@ -88,19 +88,19 @@ jobs:
         working-directory: backend
         run: vendor/bin/phpunit -c phpunit.xml
 
-    deploy:
-      needs: tests          # attend que le job "tests" ait réussi
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      runs-on: ubuntu-latest
-      steps:
-        - name: Deploy to production server
-          uses: appleboy/ssh-action@v1
-          with:
-            host: ${{ secrets.SERVER_IP }}
-            username: ${{ secrets.SERVER_USER }}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            script: |
-              cd /chemin/vers/ton/projet
-              git pull origin main
-              docker-compose down
-              docker-compose up -d --build
+  deploy:
+    needs: tests          # attend que le job "tests" ait réussi
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /chemin/vers/ton/projet
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
