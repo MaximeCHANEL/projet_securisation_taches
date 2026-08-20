@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8000";
+const API_URL = window.location.hostname === "localhost"
+    ? "http://localhost:8000"
+    : "http://89.168.60.68:8000";
 
 // Récupération du token
 const token = localStorage.getItem("token");

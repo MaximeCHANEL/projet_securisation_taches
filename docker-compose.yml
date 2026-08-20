@@ -30,8 +30,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "3306:3306"
 
   db_test:
     image: mariadb:11
@@ -43,8 +41,6 @@ services:
     volumes:
       - db_test_data:/var/lib/mysql
       - ./db_test/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "3307:3306"
 
 volumes:
   db_data:

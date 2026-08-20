@@ -1,6 +1,16 @@
 <?php
 
-header('Access-Control-Allow-Origin: http://localhost:5500');
+$allowedOrigins = [
+    'http://localhost:5500',
+    'http://89.168.60.68:5500'
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
