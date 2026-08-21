@@ -122,11 +122,11 @@ function displayTasks(tasks) {
                 ${task.description || ""}
             </p>
 
-            <button onclick="editTask(${task.id})">
+            <button class="boutonTaches" onclick="editTask(${task.id})">
                 Modifier
             </button>
 
-            <button onclick="deleteTask(${task.id})">
+            <button class="boutonTaches" onclick="deleteTask(${task.id})">
                 Supprimer
             </button>
 
