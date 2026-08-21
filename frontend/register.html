@@ -12,60 +12,70 @@
 
 <body>
 
-    <h1>Créer un compte</h1>
+    <div class="container container--narrow">
 
-    <form id="registerForm">
+        <p class="eyebrow">Task Manager</p>
 
-        <div>
-            <label for="email">Email :</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                required
-            >
+        <div class="card">
+
+            <h1>Créer un compte</h1>
+            <p class="subtitle">Ouvrir votre carnet</p>
+
+            <form id="registerForm">
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="vous@exemple.fr"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="password">Mot de passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="confirmPassword">
+                        Confirmer le mot de passe
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">
+                        Créer mon compte
+                    </button>
+
+                    <button type="button" id="loginButton">
+                        Retour à la connexion
+                    </button>
+                </div>
+
+            </form>
+
+            <p id="message"></p>
+
         </div>
 
-        <br>
-
-        <div>
-            <label for="password">Mot de passe :</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                required
-            >
-        </div>
-
-        <br>
-
-        <div>
-            <label for="confirmPassword">
-                Confirmer le mot de passe :
-            </label>
-
-            <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                required
-            >
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Créer mon compte
-        </button>
-
-        <button type="button" id="loginButton">
-            Retour à la connexion
-        </button>
-
-    </form>
-
-    <p id="message"></p>
+    </div>
 
     <script src="js/register.js"></script>
 

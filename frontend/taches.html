@@ -11,50 +11,62 @@
 
 <body>
 
-    <h1>Mes tâches</h1>
+    <div class="container">
 
-    <button id="logoutButton">
-        Se déconnecter
-    </button>
+        <div class="topbar">
+            <div class="wordmark">
+                Mes tâches
+                <small>Task Manager — carnet personnel</small>
+            </div>
 
-    <hr>
-
-    <h2>Ajouter une tâche</h2>
-
-    <form id="taskForm">
-
-        <div>
-            <label for="titre">Titre :</label>
-            <input
-                type="text"
-                id="titre"
-                required
-            >
+            <button class="logout" id="logoutButton">
+                Se déconnecter
+            </button>
         </div>
 
-        <br>
+        <div class="card">
 
-        <div>
-            <label for="description">Description :</label>
-            <textarea id="description"></textarea>
+            <h2>Ajouter une tâche</h2>
+
+            <form id="taskForm">
+
+                <div class="field">
+                    <label for="titre">Titre</label>
+                    <input
+                        type="text"
+                        id="titre"
+                        placeholder="Ex. Préparer la présentation"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Détails, contexte, échéance..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">
+                        Ajouter
+                    </button>
+                </div>
+
+            </form>
+
+            <p id="message"></p>
+
         </div>
 
-        <br>
+        <hr>
 
-        <button type="submit">
-            Ajouter
-        </button>
+        <div class="task-section-head">
+            <h2 style="border:none; margin:0; padding:0;">Liste des tâches</h2>
+        </div>
 
-    </form>
+        <div id="tasksList">
+            Chargement...
+        </div>
 
-    <p id="message"></p>
-
-    <hr>
-
-    <h2>Liste des tâches</h2>
-
-    <div id="tasksList">
-        Chargement...
     </div>
 
     <!-- JavaScript chargé après le HTML -->

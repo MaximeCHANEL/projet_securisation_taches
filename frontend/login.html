@@ -11,45 +11,56 @@
 
 <body>
 
-    <h1>Connexion</h1>
+    <div class="container container--narrow">
 
-    <form id="loginForm">
+        <p class="eyebrow">Task Manager</p>
 
-        <div>
-            <label for="email">Email :</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                required
-            >
+        <div class="card">
+
+            <h1>Connexion</h1>
+            <p class="subtitle">Accéder à votre carnet</p>
+
+            <form id="loginForm">
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="vous@exemple.fr"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="password">Mot de passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">
+                        Se connecter
+                    </button>
+
+                    <button type="button" id="registerButton">
+                        S'inscrire
+                    </button>
+                </div>
+
+            </form>
+
+            <p id="message"></p>
+
         </div>
 
-        <br>
-
-        <div>
-            <label for="password">Mot de passe :</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                required
-            >
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Se connecter
-        </button>
-
-        <button type="button" id="registerButton">
-            S'inscrire
-        </button>
-
-    </form>
-
-    <p id="message"></p>
+    </div>
 
     <!-- JS chargé après le HTML -->
     <script src="js/login.js"></script>
