@@ -108,5 +108,5 @@ jobs:
           script: |
             cd /home/ubuntu/projet_securisation_taches
             git pull origin main
-            docker compose down
+            docker compose down -v
             docker compose up -d --build
