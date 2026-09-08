@@ -10,6 +10,8 @@ RUN apt-get update \
         pdo \
         pdo_mysql \
         zip \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite

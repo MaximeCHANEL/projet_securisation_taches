@@ -24,6 +24,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Database;
 use App\Auth;
 use App\TaskController;
+use App\LogsController;
+use MongoDB\Client;
 
 header('Content-Type: application/json');
 
@@ -54,9 +56,16 @@ $url = parse_url(
 $database = new Database();
 $pdo = $database->getConnection();
 
+// Connexion à MongoDB
+$mongo = new Client('mongodb://mongodb:27017');
+
+$mongoDatabase = $mongo->selectDatabase('securisation_taches');
+
+$mongoCollection = $mongoDatabase->selectCollection('logs_connexion');
+
 // Création des classes
-$auth = new Auth($pdo);
-$taskController = new TaskController($pdo);
+$auth = new Auth($pdo, $mongoCollection);
+$taskController = new TaskController($pdo, $mongoCollection);
 
 /*
 |--------------------------------------------------------------------------
@@ -130,16 +139,33 @@ if ($method === 'POST' && $url ==='/login') {
 |--------------------------------------------------------------------------
 */
 
-if (
-    str_starts_with($url, '/tasks')
-) {
-    $userId = $auth->authenticate();
+$userId = $auth->authenticate();
 
-    if ($userId === null) {
+if ($userId === null) {
+    jsonResponse([
+        'error' => 'Unauthorized'
+    ], 401);
+}
+
+/*
+|--------------------------------------------------------------------------
+| POST /logout
+|--------------------------------------------------------------------------
+*/
+
+if ($method === 'POST' && $url === '/logout') {
+
+    $result = $auth->logout();
+
+    if (!$result) {
         jsonResponse([
             'error' => 'Unauthorized'
         ], 401);
     }
+
+    jsonResponse([
+        'message' => 'Logout successful'
+    ]);
 }
 
 /*
@@ -178,7 +204,8 @@ if ($method === 'POST' && $url ==='/tasks') {
     $result = $taskController->createTask(
         $userId,
         $data['titre'],
-        $data['description']
+        $data['description'],
+        $data['statut']
     );
 
     if (isset($result['error'])) {
@@ -237,8 +264,8 @@ if (
     $taskId = (int) $matches[1];
 
     $result = $taskController->deleteTask(
-        $taskId,
-        $userId
+        $userId,
+        $taskId
     );
 
     if (isset($result['error'])) {

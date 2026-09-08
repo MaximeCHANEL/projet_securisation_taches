@@ -5,14 +5,18 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use App\TaskController;
 use PDO;
+use MongoDB\Client;
+use MongoDB\Collection;
 
 class TaskTest extends TestCase
 {
     private PDO $pdo;
     private TaskController $taskController;
+    private Collection $historiqueCollection;
 
     protected function setUp(): void
     {
+        // Connexion MariaDB
         $this->pdo = new PDO(
             sprintf(
                 'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
@@ -29,7 +33,20 @@ class TaskTest extends TestCase
             PDO::ERRMODE_EXCEPTION
         );
 
-        $this->taskController = new TaskController($this->pdo);
+        // Connexion MongoDB
+        $mongo = new Client(
+            getenv('MONGO_URI')
+        );
+
+        $this->historiqueCollection = $mongo
+            ->selectDatabase('securisation_taches')
+            ->selectCollection('historique_actions_taches');
+
+        // Création du contrôleur
+        $this->taskController = new TaskController(
+            $this->pdo,
+            $this->historiqueCollection
+        );
     }
 
     private function createUser(): int
@@ -86,10 +103,12 @@ class TaskTest extends TestCase
         $result = $this->taskController->createTask(
             $userId,
             'Tâche PHPUnit',
-            'Description de la tâche PHPUnit'
+            'Description de la tâche PHPUnit',
+            'a_faire'
         );
 
         $this->assertArrayNotHasKey('error', $result);
+
         $this->assertEquals(
             'Task created successfully',
             $result['message']
@@ -99,9 +118,10 @@ class TaskTest extends TestCase
     public function testGetTasks(): void
     {
         $userId = $this->createUser();
+
         $this->createTask($userId);
 
-        $result = $this->taskController->getTasks();
+        $result = $this->taskController->getTasks($userId);
 
         $this->assertIsArray($result);
         $this->assertNotEmpty($result);
@@ -111,6 +131,7 @@ class TaskTest extends TestCase
     public function testUpdateTask(): void
     {
         $userId = $this->createUser();
+
         $taskId = $this->createTask($userId);
 
         $result = $this->taskController->updateTask(
@@ -124,6 +145,7 @@ class TaskTest extends TestCase
         );
 
         $this->assertArrayNotHasKey('error', $result);
+
         $this->assertEquals(
             'Task updated successfully',
             $result['message']
@@ -133,11 +155,16 @@ class TaskTest extends TestCase
     public function testDeleteTask(): void
     {
         $userId = $this->createUser();
+
         $taskId = $this->createTask($userId);
 
-        $result = $this->taskController->deleteTask($taskId);
+        $result = $this->taskController->deleteTask(
+            $taskId,
+            $userId
+        );
 
         $this->assertArrayNotHasKey('error', $result);
+
         $this->assertEquals(
             'Task deleted successfully',
             $result['message']
@@ -162,6 +189,7 @@ class TaskTest extends TestCase
         );
 
         $this->assertArrayHasKey('error', $result);
+
         $this->assertEquals(
             'Unauthorized',
             $result['error']

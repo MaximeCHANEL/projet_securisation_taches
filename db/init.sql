@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
     `id_utilisateurs` INT NOT NULL AUTO_INCREMENT,
     `mail` VARCHAR(255) NOT NULL,
     `mot_de_passe` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(20) NOT NULL DEFAULT 'utilisateur',
 
     PRIMARY KEY (`id_utilisateurs`),
     UNIQUE KEY `mail` (`mail`)
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 CREATE TABLE IF NOT EXISTS `sessions` (
     `id_sessions` INT NOT NULL AUTO_INCREMENT,
     `token_hash` CHAR(64) NOT NULL,
+    `expires_at` DATETIME NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `id_utilisateurs` INT NOT NULL,
 

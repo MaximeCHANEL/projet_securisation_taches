@@ -3,21 +3,31 @@
 namespace App;
 
 use PDO;
+use MongoDB\Collection;
+use MongoDB\BSON\UTCDateTime;
 
 class TaskController
 {
     private PDO $pdo;
+    private Collection $historiqueCollection;
 
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, Collection $historiqueCollection)
     {
         $this->pdo = $pdo;
+        $this->historiqueCollection = $historiqueCollection;
     }
 
-    public function getTasks(): array
+    public function getTasks(int $userId): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM taches"
+        $stmt = $this->pdo->prepare(
+            "SELECT *
+            FROM taches
+            WHERE id_utilisateurs = :userId"
         );
+
+        $stmt->execute([
+            'userId' => $userId
+        ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -25,7 +35,8 @@ class TaskController
     public function createTask(
         int $userId,
         string $titre,
-        string $description
+        string $description,
+        string $statut
     ): array
     {
         if (empty($titre)) {
@@ -53,7 +64,18 @@ class TaskController
             'id_utilisateurs' => $userId,
             'titre' => $titre,
             'description' => $description,
-            'statut' => 'a_faire'
+            'statut' => $statut
+        ]);
+
+        // Récupération de l'ID de la tâche créée
+        $taskId = (int) $this->pdo->lastInsertId();
+
+        // Enregistrement de l'action dans MongoDB
+        $this->historiqueCollection->insertOne([
+            'utilisateur_id' => (int) $userId,
+            'tache_id' => $taskId,
+            'action' => 'creation',
+            'date_action' => new UTCDateTime()
         ]);
 
         return [
@@ -83,7 +105,7 @@ class TaskController
         $statut = $data['statut'] ?? null;
 
         if ($titre === null || $description === null || $statut === null) {
-            return ['error' => 'Missing titre or description'];
+            return ['error' => 'Missing required fields'];
         }
 
         $stmt = $this->pdo->prepare(
@@ -99,12 +121,23 @@ class TaskController
             'statut' => $statut
         ]);
 
+        // Enregistrement de l'action dans MongoDB
+        $this->historiqueCollection->insertOne([
+            'utilisateur_id' => (int) $userId,
+            'tache_id' => $id,
+            'action' => 'modification',
+            'date_action' => new UTCDateTime()
+        ]);
+
         return [
             'message' => 'Task updated successfully'
         ];
     }
 
-    public function deleteTask(string $id): array
+    public function deleteTask(
+        int $userId,
+        string $id
+    ): array
     {
         $stmt = $this->pdo->prepare(
             "DELETE FROM taches
@@ -113,6 +146,14 @@ class TaskController
 
         $stmt->execute([
             'id' => $id
+        ]);
+
+        // Enregistrement de l'action dans MongoDB
+        $this->historiqueCollection->insertOne([
+            'utilisateur_id' => $userId,
+            'tache_id' => (int) $id,
+            'action' => 'suppression',
+            'date_action' => new UTCDateTime()
         ]);
 
         return [

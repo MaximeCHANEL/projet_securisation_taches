@@ -27,7 +27,7 @@ services:
       MYSQL_DATABASE: projet_securisation_taches
       MYSQL_USER: app_user
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
+    volumes:  
       - db_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -42,6 +42,17 @@ services:
       - db_test_data:/var/lib/mysql
       - ./db_test/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  mongodb:
+    image: mongo:8
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+
 volumes:
   db_data:
   db_test_data:
+  mongodb_data:

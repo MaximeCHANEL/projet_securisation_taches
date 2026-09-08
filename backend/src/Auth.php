@@ -3,14 +3,19 @@
 namespace App;
 
 use PDO;
+use MongoDB\Collection;
+use MongoDB\BSON\UTCDateTime;
 
 class Auth
 {
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
+    private Collection $mongoCollection;
+
+    public function __construct(PDO $pdo, Collection $mongoCollection)
     {
         $this->pdo = $pdo;
+        $this->mongoCollection = $mongoCollection;
     }
 
     public function register(string $email, string $password): array
@@ -75,24 +80,56 @@ class Auth
 
         $user = $stmt->fetch();
 
+        // Identifiants incorrects
         if (!$user || !password_verify($password, $user['mot_de_passe'])) {
+
+            // Enregistrement de l'échec dans MongoDB
+            $this->mongoCollection->insertOne([
+                'email' => $email,
+                'action' => 'connexion',
+                'resultat' => 'echec',
+                'date_connexion' => new UTCDateTime()
+            ]);
+
             return [
                 'error' => 'Invalid credentials'
             ];
         }
 
+        // Génération du token
         $token = bin2hex(random_bytes(32));
 
         $tokenHash = hash('sha256', $token);
 
+        // Expiration du token au bout d'une heure
+        $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+
         $stmt = $this->pdo->prepare(
-            "INSERT INTO sessions (token_hash, id_utilisateurs)
-            VALUES (:token_hash, :id_utilisateurs)"
+            "INSERT INTO sessions (
+                token_hash,
+                id_utilisateurs,
+                expires_at
+            )
+            VALUES (
+                :token_hash,
+                :id_utilisateurs,
+                :expires_at
+            )"
         );
 
         $stmt->execute([
             'token_hash' => $tokenHash,
-            'id_utilisateurs' => $user['id_utilisateurs']
+            'id_utilisateurs' => $user['id_utilisateurs'],
+            'expires_at' => $expiresAt
+        ]);
+
+        // Enregistrement de la connexion réussie dans MongoDB
+        $this->mongoCollection->insertOne([
+            'utilisateur_id' => (int) $user['id_utilisateurs'],
+            'email' => $email,
+            'action' => 'connexion',
+            'resultat' => 'succes',
+            'date_connexion' => new UTCDateTime()
         ]);
 
         return [
@@ -121,7 +158,8 @@ class Auth
         $stmt = $this->pdo->prepare(
             "SELECT id_utilisateurs
             FROM sessions
-            WHERE token_hash = :token_hash"
+            WHERE token_hash = :token_hash
+            AND expires_at > NOW()"
         );
 
         $stmt->execute([
@@ -135,6 +173,51 @@ class Auth
         }
 
         return (int) $session['id_utilisateurs'];
+    }
+
+    public function isAdmin(int $userId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT role
+            FROM utilisateurs
+            WHERE id_utilisateurs = :id"
+        );
+
+        $stmt->execute(['id' => $userId]);
+
+        $user = $stmt->fetch();
+
+        return $user && $user['role'] === 'admin';
+    }
+
+    public function logout(): bool
+    {
+        $headers = getallheaders();
+
+        if (!isset($headers['Authorization'])) {
+            return false;
+        }
+
+        $authorization = $headers['Authorization'];
+
+        if (!str_starts_with($authorization, 'Bearer ')) {
+            return false;
+        }
+
+        $token = substr($authorization, 7);
+
+        $tokenHash = hash('sha256', $token);
+
+        $stmt = $this->pdo->prepare(
+            "DELETE FROM sessions
+            WHERE token_hash = :token_hash"
+        );
+
+        $stmt->execute([
+            'token_hash' => $tokenHash
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }
 

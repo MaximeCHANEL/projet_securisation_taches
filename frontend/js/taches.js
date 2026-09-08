@@ -122,11 +122,15 @@ function displayTasks(tasks) {
                 ${task.description || ""}
             </p>
 
-            <button class="boutonTaches" onclick="editTask(${task.id})">
+            <p>
+                ${task.statut || ""}
+            </p>
+
+            <button class="boutonTaches" onclick="editTask(${task.id_taches})">
                 Modifier
             </button>
 
-            <button class="boutonTaches" onclick="deleteTask(${task.id})">
+            <button class="boutonTaches" onclick="deleteTask(${task.id_taches})">
                 Supprimer
             </button>
 
@@ -155,6 +159,9 @@ document
         const description =
             document.getElementById("description").value;
 
+        const statut =
+            document.getElementById("statut").value;
+
         try {
 
             const response = await fetch(
@@ -166,7 +173,8 @@ document
 
                     body: JSON.stringify({
                         titre: titre,
-                        description: description
+                        description: description,
+                        statut: statut
                     })
                 }
             );
@@ -221,6 +229,13 @@ async function editTask(id) {
         return;
     }
 
+    const statut =
+        prompt("Nouveau statut :");
+
+    if (description === null) {
+        return;
+    }
+
     try {
 
         const response = await fetch(
@@ -232,7 +247,8 @@ async function editTask(id) {
 
                 body: JSON.stringify({
                     titre: titre,
-                    description: description
+                    description: description,
+                    statut: statut
                 })
             }
         );
