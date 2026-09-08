@@ -5,6 +5,8 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use App\Auth;
 use PDO;
+use MongoDB\Client;
+use MongoDB\Collection;
 
 class AuthTest extends TestCase
 {
@@ -29,7 +31,16 @@ class AuthTest extends TestCase
             PDO::ERRMODE_EXCEPTION
         );
 
-        $this->auth = new Auth($this->pdo);
+        $mongo = new Client(getenv('MONGO_URI'));
+
+        $logsCollection = $mongo
+            ->selectDatabase('securisation_taches')
+            ->selectCollection('logs_connexion');
+
+        $this->auth = new Auth(
+            $this->pdo,
+            $logsCollection
+        );
     }
 
     public function testRegister(): void
