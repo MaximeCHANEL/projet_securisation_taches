@@ -49,3 +49,6 @@ CREATE TABLE IF NOT EXISTS `taches` (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE sessions
+ADD COLUMN expires_at DATETIME NOT NULL;
