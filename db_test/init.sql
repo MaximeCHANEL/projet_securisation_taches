@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 CREATE TABLE IF NOT EXISTS `sessions` (
     `id_sessions` INT NOT NULL AUTO_INCREMENT,
     `token_hash` CHAR(64) NOT NULL,
+    `expires_at` DATETIME NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `id_utilisateurs` INT NOT NULL,
 
